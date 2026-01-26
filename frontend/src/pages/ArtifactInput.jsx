@@ -10,10 +10,10 @@ const ArtifactInput = () => {
     const { updateAnalysisReport, setIsAnalyzing, setAnalysisError } = useAnalysis();
 
     const [formData, setFormData] = useState({
-        architecture: 'Authentication service exposes REST APIs for login and token issuance. It connects to a user database and is accessed by a public API gateway.',
-        code: `const query = \`SELECT * FROM users WHERE id='\${userId}';\`;`,
-        logs: 'Failed login attempts from 192.168.1.10 exceeded threshold',
-        workflow: '// Example: customer-support-bot escalates to human after 3 failed logins within 5 minutes.'
+        architecture: '',
+        code: '',
+        logs: '',
+        workflow: ''
     });
 
     const [isSubmitting, setIsSubmitting] = useState(false);
