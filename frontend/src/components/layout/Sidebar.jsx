@@ -1,0 +1,61 @@
+import React from 'react';
+import { NavLink } from 'react-router-dom';
+import {
+  LayoutGrid,
+  ShieldAlert,
+  ScanSearch,
+  Bell,
+  BarChart3,
+  Wrench,
+  ShieldCheck,
+  FilePlus
+} from 'lucide-react';
+import './Sidebar.css';
+
+const Sidebar = () => {
+  const navItems = [
+    { to: '/add-artifact', icon: FilePlus, label: 'Add Artifact' },
+    { to: '/threat-modeling', icon: ShieldAlert, label: 'Threat Modeling' },
+    { to: '/security-review', icon: ScanSearch, label: 'Security Review' },
+    { to: '/soc-alerts', icon: Bell, label: 'SOC Alerts', badge: 3 },
+    { to: '/risk-summary', icon: BarChart3, label: 'Risk Summary' },
+    { to: '/remediation', icon: Wrench, label: 'Remediation' },
+  ];
+
+  return (
+    <aside className="sidebar">
+      <div className="sidebar-header">
+        <div className="logo-icon">
+          <ShieldCheck size={20} color="white" fill="#22d3ee" />
+        </div>
+        <span className="logo-text">SecGuard AI</span>
+      </div>
+
+      <nav className="sidebar-nav">
+        {navItems.map((item) => (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+          >
+            <item.icon size={18} />
+            <span>{item.label}</span>
+            {item.badge && <span className="badge">{item.badge}</span>}
+          </NavLink>
+        ))}
+      </nav>
+
+      <div className="sidebar-footer">
+        <div className="user-profile">
+          <div className="avatar">AC</div>
+          <div className="user-info">
+            <span className="user-name">Alex Chen</span>
+            <span className="user-role">Lead Analyst</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+  );
+};
+
+export default Sidebar;

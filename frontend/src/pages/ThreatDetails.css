@@ -1,0 +1,234 @@
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    width: 1100px;
+    height: 80vh;
+    background: #0f141a;
+    border-radius: 12px;
+    border: 1px solid var(--border-active);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.modal-header {
+    padding: 24px 32px;
+    border-bottom: 1px solid var(--border-subtle);
+    background: #0f141a;
+}
+
+.badge-critical {
+    background: rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.modal-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+    margin: 0;
+}
+
+.modal-body-grid {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+.code-view-dark {
+    flex: 1;
+    background: #000;
+    border-right: 1px solid var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+    color: #c9d1d9;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    overflow-y: auto;
+}
+
+.file-path {
+    padding: 12px 20px;
+    color: #8b949e;
+    font-size: 12px;
+    border-bottom: 1px solid #21262d;
+}
+
+.code-block {
+    padding: 20px 0;
+}
+
+.cl {
+    padding: 0 20px;
+    line-height: 1.6;
+}
+
+.ln {
+    color: #484f58;
+    display: inline-block;
+    width: 24px;
+    margin-right: 16px;
+    text-align: right;
+    user-select: none;
+}
+
+.c-comment {
+    color: #8b949e;
+}
+
+.vul-highlight {
+    background: rgba(185, 28, 28, 0.15);
+    border-left: 2px solid #ef4444;
+}
+
+.access-logs {
+    margin-top: auto;
+    padding: 20px;
+    border-top: 1px solid #21262d;
+    font-size: 11px;
+}
+
+.log-title {
+    color: #8b949e;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.log-line {
+    color: #c9d1d9;
+    font-family: var(--font-mono);
+    margin-bottom: 4px;
+}
+
+.analysis-view {
+    width: 450px;
+    background: #0d1117;
+    padding: 32px;
+    overflow-y: auto;
+}
+
+.section-head {
+    color: var(--accent-purple);
+    font-size: 12px;
+    font-weight: 700;
+    margin: 0 0 24px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.sub-head {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+}
+
+.sub-head.white {
+    color: white;
+}
+
+.analysis-text {
+    font-size: 13px;
+    color: #8b949e;
+    line-height: 1.6;
+}
+
+.analysis-text code {
+    background: rgba(110, 118, 129, 0.4);
+    padding: 2px 4px;
+    border-radius: 4px;
+    color: #c9d1d9;
+}
+
+.vector-box {
+    background: rgba(22, 27, 34, 0.5);
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 16px;
+}
+
+.vector-list {
+    margin: 0;
+    padding-left: 20px;
+    font-size: 13px;
+    color: #c9d1d9;
+    line-height: 1.6;
+}
+
+.vector-list li {
+    margin-bottom: 6px;
+}
+
+.fix-box {
+    background: rgba(56, 139, 253, 0.1);
+    border: 1px solid rgba(56, 139, 253, 0.4);
+    border-radius: 6px;
+    padding: 16px;
+}
+
+.fix-code {
+    background: #0d1117;
+    padding: 12px;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: #7ee787;
+    overflow-x: auto;
+    border: 1px solid #30363d;
+    margin: 0;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 32px;
+}
+
+.btn-apply {
+    flex: 1;
+    background: #238636;
+    color: white;
+    border: 1px solid rgba(240, 246, 252, 0.1);
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.btn-apply:hover {
+    background: #2ea043;
+}
+
+.btn-dismiss {
+    flex: 1;
+    background: transparent;
+    color: #c9d1d9;
+    border: 1px solid #30363d;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.btn-dismiss:hover {
+    background: #21262d;
+}
