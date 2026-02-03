@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Union
 from enum import Enum
 from datetime import datetime
 
@@ -8,6 +8,8 @@ class ArtifactType(str, Enum):
     ARCHITECTURE = "architecture"
     LOGS = "logs"
     API_SPEC = "api_spec"
+    PDF_DOCUMENT = "pdf_document"
+    CODE_REPOSITORY = "code_repository"
 
 class VulnerabilitySeverity(str, Enum):
     CRITICAL = "critical"
@@ -21,6 +23,29 @@ class AnalysisRequest(BaseModel):
     content: str
     metadata: Optional[Dict[str, Any]] = None
 
+class PDFBase64Request(BaseModel):
+    content_base64: str
+    metadata: Optional[Dict[str, Any]] = None
+
+class PDFUrlRequest(BaseModel):
+    url: str
+    metadata: Optional[Dict[str, Any]] = None
+
+class GitHubArtifactRequest(BaseModel):
+    url: str
+    metadata: Optional[Dict[str, Any]] = None
+
+class MLSignal(BaseModel):
+    type: str
+    subtype: Optional[str] = None
+    confidence: float
+    evidence: str
+
+class MLAnalyticsOutput(BaseModel):
+    engine: str = "local_ml"
+    artifact_id: str
+    signals: List[MLSignal]
+
 class AgentFinding(BaseModel):
     agent_name: str
     finding_type: str
@@ -28,6 +53,7 @@ class AgentFinding(BaseModel):
     severity: VulnerabilitySeverity
     location: Optional[str] = None
     suggestion: Optional[str] = None
+    derived_from: Optional[str] = None  # "Derived from PDF Artifact" etc.
 
 class SecurityReport(BaseModel):
     id: str
@@ -36,6 +62,7 @@ class SecurityReport(BaseModel):
     findings: List[AgentFinding]
     summary: str
     status: str
+    ml_signals: Optional[Dict[str, Any]] = None
 
 class AgentMessage(BaseModel):
     agent: str

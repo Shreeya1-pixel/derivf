@@ -180,6 +180,20 @@
     color: var(--accent-orange) !important;
 }
 
+.severity-critical,
+.severity-high {
+    color: var(--accent-red) !important;
+}
+
+.severity-medium {
+    color: var(--accent-orange) !important;
+}
+
+.severity-low,
+.severity-info {
+    color: var(--accent-green) !important;
+}
+
 .priority-bar {
     height: 6px;
     background: #1e2630;
@@ -219,4 +233,12 @@
 .btn-jira:hover {
     border-color: var(--text-tertiary);
     background: var(--bg-card-hover);
+}
+
+.derived-from-badge {
+    font-size: 11px;
+    color: var(--accent-cyan);
+    background: rgba(34, 211, 238, 0.1);
+    padding: 2px 8px;
+    border-radius: 4px;
 }

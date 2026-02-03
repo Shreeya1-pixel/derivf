@@ -12,16 +12,19 @@ export const useAnalysis = () => {
 
 export const AnalysisProvider = ({ children }) => {
     const [analysisReport, setAnalysisReport] = useState(null);
+    const [lastArtifact, setLastArtifact] = useState(null); // { type, contentPreview }
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [error, setError] = useState(null);
 
-    const updateAnalysisReport = (report) => {
+    const updateAnalysisReport = (report, artifactMeta = null) => {
         setAnalysisReport(report);
+        if (artifactMeta) setLastArtifact(artifactMeta);
         setError(null);
     };
 
     const clearAnalysisReport = () => {
         setAnalysisReport(null);
+        setLastArtifact(null);
         setError(null);
     };
 
@@ -31,6 +34,7 @@ export const AnalysisProvider = ({ children }) => {
 
     const value = {
         analysisReport,
+        lastArtifact,
         isAnalyzing,
         error,
         updateAnalysisReport,

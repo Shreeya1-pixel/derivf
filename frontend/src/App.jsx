@@ -8,7 +8,8 @@ import ThreatModeling from './pages/ThreatModeling';
 import SecurityReview from './pages/SecurityReview';
 import Overview from './pages/Overview';
 import SocAlerts from './pages/SocAlerts';
-import ArtifactInput from './pages/ArtifactInput'; // I'll add this route too
+import ArtifactInput from './pages/ArtifactInput';
+import MLAnalytics from './pages/MLAnalytics';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
             <Route path="/security-review" element={<SecurityReview />} />
             <Route path="/soc-alerts" element={<SocAlerts />} />
             <Route path="/add-artifact" element={<ArtifactInput />} />
+            <Route path="/ml-analytics" element={<MLAnalytics />} />
           </Routes>
         </Layout>
       </BrowserRouter>

@@ -1,3 +1,9 @@
+// Filter findings by agent name
+export const filterByAgent = (findings, agentName) => {
+  if (!findings || !Array.isArray(findings)) return [];
+  return findings.filter((f) => (f.agent_name || '').toLowerCase() === (agentName || '').toLowerCase());
+};
+
 // Helper function to group findings by agent
 export const groupFindingsByAgent = (findings) => {
     if (!findings || !Array.isArray(findings)) return {};

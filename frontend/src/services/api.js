@@ -83,6 +83,67 @@ class SentinelAPI {
     }
 
     /**
+     * Analyze PDF via multipart upload
+     * @param {File} file - PDF file
+     */
+    async analyzePdfUpload(file) {
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            const response = await fetch(getApiUrl('/analyze/pdf/upload'), {
+                method: 'POST',
+                body: formData,
+            });
+            if (!response.ok) throw new Error(`API Error: ${response.status} ${response.statusText}`);
+            const data = await response.json();
+            return { success: true, data };
+        } catch (error) {
+            console.error('PDF upload analysis error:', error);
+            return { success: false, error: error.message };
+        }
+    }
+
+    /**
+     * Analyze PDF from URL
+     * @param {string} url - PDF URL
+     */
+    async analyzePdfUrl(url) {
+        try {
+            const response = await fetch(getApiUrl('/analyze/pdf/url'), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url }),
+            });
+            if (!response.ok) throw new Error(`API Error: ${response.status} ${response.statusText}`);
+            const data = await response.json();
+            return { success: true, data };
+        } catch (error) {
+            console.error('PDF URL analysis error:', error);
+            return { success: false, error: error.message };
+        }
+    }
+
+    /**
+     * Analyze GitHub link (repo, file, commit, PR)
+     * @param {string} url - GitHub URL
+     */
+    async analyzeGitHub(url) {
+        try {
+            const response = await fetch(getApiUrl('/analyze/github'), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url }),
+            });
+            if (!response.ok) throw new Error(`API Error: ${response.status} ${response.statusText}`);
+            const data = await response.json();
+            return { success: true, data };
+        } catch (error) {
+            console.error('GitHub analysis error:', error);
+            return { success: false, error: error.message };
+        }
+    }
+
+    /**
      * Check backend health
      * @returns {Promise<Object>} Health status
      */

@@ -145,6 +145,36 @@ button {
   padding: var(--space-6);
 }
 
+.mt-6 {
+  margin-top: var(--space-6);
+}
+
+/* Empty state - used across pages when no API data */
+.empty-state-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 32px;
+  background: var(--bg-card);
+  border: 1px dashed var(--border-subtle);
+  border-radius: var(--radius-lg);
+  text-align: center;
+  gap: 16px;
+}
+
+.empty-state-card h3 {
+  margin: 0;
+  font-size: 20px;
+  color: var(--text-primary);
+}
+
+.empty-state-card p {
+  margin: 0;
+  color: var(--text-secondary);
+  max-width: 400px;
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;

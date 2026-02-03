@@ -1,151 +1,162 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import {
-    Play,
-    Filter,
-    Download,
-    Ticket,
-    FileText
+  Play,
+  Filter,
+  Download,
+  Ticket,
+  FileText,
+  FileSearch,
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useAnalysis } from '../context/AnalysisContext';
+import { filterByAgent } from '../utils/findingsHelpers';
+import { AGENT_NAMES } from '../constants/agents';
 import './SecurityReview.css';
 
 const SecurityReview = () => {
+  const { analysisReport } = useAnalysis();
+  const navigate = useNavigate();
+  const [selectedIdx, setSelectedIdx] = useState(0);
+
+  const securityFindings = useMemo(() => {
+    return filterByAgent(analysisReport?.findings || [], AGENT_NAMES.LOGIC_AUDITOR);
+  }, [analysisReport]);
+
+  const selected = securityFindings[selectedIdx];
+  const hasData = securityFindings.length > 0;
+
+  if (!hasData) {
     return (
-        <div className="page-container">
-            <header className="page-header">
-                <div className="breadcrumb">
-                    <span className="text-muted">Pages / Security Review</span>
-                    <h1 className="page-title">Active Assessment: Project Titan</h1>
-                </div>
-                <button className="btn-primary" onClick={() => {
-                    alert('Security Review: This would trigger a new security review scan. Navigate to "Add Artifact" page to submit new artifacts for analysis.');
-                    window.location.href = '/add-artifact';
-                }}>
-                    <Play size={16} fill="black" />
-                    Run Security Review
-                </button>
-            </header>
-
-            {/* Metrics */}
-            <div className="stats-row">
-                <div className="stat-card-simple">
-                    <div className="text-muted text-xs font-bold mb-2">Critical & High Severity</div>
-                    <div className="text-3xl font-bold text-white mb-1">12</div>
-                    <div className="text-xs text-red-400">+2 new since yesterday</div>
-                </div>
-                <div className="stat-card-simple">
-                    <div className="text-muted text-xs font-bold mb-2">Medium Severity</div>
-                    <div className="text-3xl font-bold text-white mb-1">45</div>
-                    <div className="text-xs text-muted">No change</div>
-                </div>
-                <div className="stat-card-simple">
-                    <div className="text-muted text-xs font-bold mb-2">Low Severity</div>
-                    <div className="text-3xl font-bold text-white mb-1">3</div>
-                    <div className="text-xs text-green-400">5 resolved</div>
-                </div>
-            </div>
-
-            <div className="mb-4 flex justify-between items-center">
-                <h3 className="font-semibold text-lg">Identified Findings</h3>
-                <div className="flex gap-2">
-                    <button className="btn-secondary sm" onClick={() => alert('Filter functionality: This would allow you to filter findings by severity, component, or status.')}><Filter size={14} /> Filter</button>
-                    <button className="btn-secondary sm" onClick={() => alert('Export functionality: This would export the findings table to CSV or JSON format.')}><Download size={14} /> Export</button>
-                </div>
-            </div>
-
-            <div className="findings-table-container">
-                <table className="findings-table">
-                    <thead>
-                        <tr>
-                            <th>FINDING</th>
-                            <th>SEVERITY</th>
-                            <th>COMPONENT</th>
-                            <th>RISK LEVEL</th>
-                            <th>STATUS</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr className="active-row">
-                            <td>
-                                <div className="font-medium text-white">SQL Injection Vulnerability</div>
-                                <div className="text-xs text-muted">CVE-2024-8932</div>
-                            </td>
-                            <td><span className="badge-high">High</span></td>
-                            <td className="text-mono text-sm">auth-service/login.ts</td>
-                            <td className="text-sm">Critical</td>
-                            <td><span className="status-dot red">Open</span></td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div className="font-medium text-white">Cross-Site Scripting (Reflected)</div>
-                                <div className="text-xs text-muted">CWE-79</div>
-                            </td>
-                            <td><span className="badge-medium">Medium</span></td>
-                            <td className="text-mono text-sm">frontend/search.tsx</td>
-                            <td className="text-sm">Moderate</td>
-                            <td><span className="status-dot orange">In Review</span></td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div className="font-medium text-white">Outdated Dependency (Lodash)</div>
-                                <div className="text-xs text-muted">npm-audit-1293</div>
-                            </td>
-                            <td><span className="badge-low">Low</span></td>
-                            <td className="text-mono text-sm">package.json</td>
-                            <td className="text-sm">Low</td>
-                            <td><span className="status-dot green">Resolved</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div className="detail-panel mt-6">
-                <div className="detail-panel-header">
-                    <h3>Detailed Analysis: SQL Injection Vulnerability</h3>
-                    <div className="flex gap-2">
-                        <button className="btn-secondary sm" onClick={() => alert('View Logs: This would display the raw application logs related to this vulnerability.')}><FileText size={14} /> View Logs</button>
-                        <button className="btn-secondary sm" onClick={() => alert('Assign Ticket: This would create and assign a ticket to a team member for remediation.')}><Ticket size={14} /> Assign Ticket</button>
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-6 p-6">
-                    <div className="bg-black p-4 rounded border border-gray-800 font-mono text-xs">
-                        <div className="text-gray-500 mb-2">// auth-service/login.ts : Line 42</div>
-                        <div className="text-green-400">const query = "SELECT * FROM users WHERE username = '" + username + "' AND password = '" + password + "'";</div>
-                        <div className="text-white mt-1">db.execute(query, (err, result) ={'>'} {'{'} if (err) throw err; ... {'}'});</div>
-
-                        <div className="mt-4 pt-4 border-t border-gray-800">
-                            <div className="text-gray-500 mb-1">REQUEST TRACE</div>
-                            <div className="text-gray-400"> POST /api/v1/auth/login Payload: {'{'} "username": "admin' --", "password": "random" {'}'} Status: 200 OK (Unexpected Success)</div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <div className="mb-4">
-                            <div className="flex items-center gap-2 mb-2">
-                                <div className="w-2 h-2 rounded-full bg-cyan-400"></div>
-                                <h4 className="text-cyan-400 font-bold text-sm">Attack Vector Identified</h4>
-                            </div>
-                            <p className="text-sm text-gray-400 leading-relaxed">
-                                The provided code snippet demonstrates a classic SQL Injection vulnerability. The user input username is directly concatenated into the SQL query string without sanitization or parameterization.
-                            </p>
-                        </div>
-                        <div className="mb-4">
-                            <div className="flex items-center gap-2 mb-2">
-                                <div className="w-2 h-2 rounded-full bg-purple-400"></div>
-                                <h4 className="text-purple-400 font-bold text-sm">Impact Assessment</h4>
-                            </div>
-                            <ul className="list-disc list-inside text-sm text-gray-400 leading-relaxed pl-1">
-                                <li>Confidentiality Loss: Attackers can bypass authentication as administrator.</li>
-                                <li>Data Integrity: Potential to drop tables or modify user records.</li>
-                                <li>Availability: Denial of service via resource exhaustion queries.</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+      <div className="page-container">
+        <header className="page-header">
+          <div className="breadcrumb">
+            <span className="text-muted">Pages / Security Review</span>
+            <h1 className="page-title">Logic Auditor (Security Review)</h1>
+          </div>
+        </header>
+        <div className="empty-state-card">
+          <FileSearch size={48} color="#6e7681" />
+          <h3>No Security Review Findings</h3>
+          <p>Logic Auditor analyzes code for vulnerabilities (SQLi, XSS, logic bugs). Run an analysis with code content.</p>
+          <button className="btn-primary" onClick={() => navigate('/add-artifact')}>
+            <Play size={16} fill="black" />
+            Add Artifact & Run Analysis
+          </button>
         </div>
+      </div>
     );
+  }
+
+  return (
+    <div className="page-container">
+      <header className="page-header">
+        <div className="breadcrumb">
+          <span className="text-muted">Pages / Security Review</span>
+          <h1 className="page-title">Logic Auditor — {securityFindings.length} findings</h1>
+        </div>
+        <button className="btn-primary" onClick={() => navigate('/add-artifact')}>
+          <Play size={16} fill="black" />
+          Run New Review
+        </button>
+      </header>
+
+      <div className="stats-row">
+        <div className="stat-card-simple">
+          <div className="text-muted text-xs font-bold mb-2">Critical & High</div>
+          <div className="text-3xl font-bold text-white mb-1">
+            {securityFindings.filter((f) => ['critical', 'high'].includes((f.severity || '').toLowerCase())).length}
+          </div>
+        </div>
+        <div className="stat-card-simple">
+          <div className="text-muted text-xs font-bold mb-2">Medium</div>
+          <div className="text-3xl font-bold text-white mb-1">
+            {securityFindings.filter((f) => (f.severity || '').toLowerCase() === 'medium').length}
+          </div>
+        </div>
+        <div className="stat-card-simple">
+          <div className="text-muted text-xs font-bold mb-2">Low / Info</div>
+          <div className="text-3xl font-bold text-white mb-1">
+            {securityFindings.filter((f) => ['low', 'info'].includes((f.severity || '').toLowerCase())).length}
+          </div>
+        </div>
+      </div>
+
+      <div className="mb-4 flex justify-between items-center">
+        <h3 className="font-semibold text-lg">Identified Findings (Logic Auditor)</h3>
+        <div className="flex gap-2">
+          <button className="btn-secondary sm"><Filter size={14} /> Filter</button>
+          <button className="btn-secondary sm"><Download size={14} /> Export</button>
+        </div>
+      </div>
+
+      <div className="findings-table-container">
+        <table className="findings-table">
+          <thead>
+            <tr>
+              <th>FINDING</th>
+              <th>SEVERITY</th>
+              <th>COMPONENT</th>
+              <th>STATUS</th>
+            </tr>
+          </thead>
+          <tbody>
+            {securityFindings.map((f, idx) => (
+              <tr
+                key={idx}
+                className={selectedIdx === idx ? 'active-row' : ''}
+                onClick={() => setSelectedIdx(idx)}
+                style={{ cursor: 'pointer' }}
+              >
+                <td>
+                  <div className="font-medium text-white">{f.finding_type || 'Security Finding'}</div>
+                  <div className="text-xs text-muted">{f.description?.slice(0, 60)}...</div>
+                </td>
+                <td>
+                  <span className={`badge-${(f.severity || 'medium').toLowerCase()}`}>
+                    {(f.severity || 'medium').toUpperCase()}
+                  </span>
+                </td>
+                <td className="text-mono text-sm">{f.location || '—'}</td>
+                <td><span className="status-dot red">Open</span></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {selected && (
+        <div className="detail-panel mt-6">
+          <div className="detail-panel-header">
+            <h3>{selected.finding_type || 'Security Finding'}</h3>
+            <div className="flex gap-2">
+              <button className="btn-secondary sm"><FileText size={14} /> View Logs</button>
+              <button className="btn-secondary sm"><Ticket size={14} /> Assign Ticket</button>
+            </div>
+          </div>
+          <div className="detail-panel-grid">
+            <div className="bg-black p-4 rounded border border-gray-800 font-mono text-xs">
+              <div className="text-gray-500 mb-2">// {selected.location || 'Codebase'}</div>
+              <div className="text-white mt-1">{selected.description}</div>
+            </div>
+            <div>
+              <div className="mb-4">
+                <h4 className="text-cyan-400 font-bold text-sm mb-2">Logic Auditor Analysis</h4>
+                <p className="text-sm text-gray-400 leading-relaxed">{selected.description}</p>
+              </div>
+              {selected.suggestion && (
+                <div className="mb-4">
+                  <h4 className="text-purple-400 font-bold text-sm mb-2">Suggested Fix</h4>
+                  <pre className="text-sm text-gray-400 bg-gray-900 p-3 rounded overflow-x-auto">
+                    {selected.suggestion}
+                  </pre>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default SecurityReview;

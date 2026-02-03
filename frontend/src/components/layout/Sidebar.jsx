@@ -1,20 +1,21 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import {
-  LayoutGrid,
   ShieldAlert,
   ScanSearch,
   Bell,
   BarChart3,
   Wrench,
   ShieldCheck,
-  FilePlus
+  FilePlus,
+  Brain,
 } from 'lucide-react';
 import './Sidebar.css';
 
 const Sidebar = () => {
   const navItems = [
     { to: '/add-artifact', icon: FilePlus, label: 'Add Artifact' },
+    { to: '/ml-analytics', icon: Brain, label: 'ML Analytics' },
     { to: '/threat-modeling', icon: ShieldAlert, label: 'Threat Modeling' },
     { to: '/security-review', icon: ScanSearch, label: 'Security Review' },
     { to: '/soc-alerts', icon: Bell, label: 'SOC Alerts', badge: 3 },
