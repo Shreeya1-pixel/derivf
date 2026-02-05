@@ -13,6 +13,14 @@ class Settings(BaseSettings):
     
     BACKEND_CORS_ORIGINS: list[str] = ["http://localhost:8000", "https://localhost:8000", "http://localhost:5173", "https://localhost:5173"]
 
+    # Slack (SOC alerts)
+    SLACK_BOT_TOKEN: str = ""
+    SLACK_CHANNEL_ID: str = ""
+    
+    # Supabase (Database)
+    SUPABASE_URL: str = ""
+    SUPABASE_SERVICE_ROLE_KEY: str = ""
+
     class Config:
         env_file = ".env"
 

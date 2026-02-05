@@ -1,5 +1,8 @@
 from fastapi import APIRouter, HTTPException, WebSocket, UploadFile, File
 from typing import List, Optional
+from app.services.slack_service import send_soc_alert
+from app.services.slack_formatter import build_soc_alert
+from app.services.escalation_policy import should_notify_slack
 from app.models.schemas import (
     AnalysisRequest, SecurityReport, AgentFinding,
     PDFBase64Request, PDFUrlRequest, GitHubArtifactRequest,
@@ -60,6 +63,54 @@ async def _run_full_analysis(
 
     risk_input = [f for f in all_findings if f.agent_name != "Remediation Engineer"]
     risk_evaluation = await risk_agent.analyze(risk_input)
+
+    # Slack notification after risk decision (failure must not affect API response)
+    vulnerability_record = None  # Track for alert logging
+    try:
+        score = risk_evaluation.get("overall_score", 100)
+        status = risk_evaluation.get("status", "GO")
+        risk_level = "CRITICAL" if score < 40 else "HIGH" if score < 60 else "MEDIUM" if score < 80 else "LOW"
+        if status == "NO-GO" and risk_level == "LOW":
+            risk_level = "MEDIUM"
+        consensus = {}
+        for f in risk_input:
+            name = (f.agent_name or "").replace(" ", "_").lower()
+            if name and name != "remediation_engineer":
+                consensus[name] = getattr(f.severity, "value", str(f.severity)) if hasattr(f.severity, "value") else str(f.severity or "info")
+        avg_conf = 0.7
+        if ml_output and ml_output.get("analytics", {}).get("avg_confidence") is not None:
+            avg_conf = ml_output["analytics"]["avg_confidence"]
+        
+        # Log vulnerability to Supabase before Slack notification
+        from app.services.supabase_logger import log_vulnerability, log_alert
+        vulnerability_record = log_vulnerability(
+            artifact=artifact_origin or "UNKNOWN",
+            risk=risk_level,
+            confidence=avg_conf,
+            agent_votes=consensus,
+            artifact_id=artifact_id,
+            summary=risk_evaluation.get("summary", "N/A"),
+            status=status,
+            overall_score=score,
+        )
+        
+        if should_notify_slack(risk_level, avg_conf, consensus):
+            msg = build_soc_alert(
+                artifact_type="analysis",
+                risk_level=risk_level,
+                confidence=avg_conf,
+                agent_consensus_summary=risk_evaluation.get("summary", "N/A"),
+                derived_from=artifact_origin,
+            )
+            send_soc_alert(msg)
+            
+            # Log alert to Supabase if vulnerability was logged
+            if vulnerability_record and vulnerability_record.get("id"):
+                log_alert(vulnerability_record["id"], channel="slack")
+                
+    except Exception:
+        pass  # Slack failure must not affect API response
+
 
     return SecurityReport(
         id=artifact_id,
@@ -170,7 +221,28 @@ async def analyze_github(req: GitHubArtifactRequest):
         raise HTTPException(status_code=500, detail=str(e) + "\n" + traceback.format_exc())
 
 
+@router.get("/vulnerabilities")
+async def get_vulnerabilities_history(limit: int = 100, risk_filter: Optional[str] = None):
+    """
+    Retrieve vulnerability history from Supabase.
+    
+    Args:
+        limit: Maximum number of records (default 100)
+        risk_filter: Optional filter by risk level (LOW, MEDIUM, HIGH, CRITICAL)
+    
+    Returns:
+        List of vulnerability records from Supabase audit log
+    """
+    from app.services.supabase_logger import get_vulnerabilities
+    vulnerabilities = get_vulnerabilities(limit=limit, risk_filter=risk_filter)
+    return {
+        "count": len(vulnerabilities),
+        "vulnerabilities": vulnerabilities
+    }
+
+
 @router.get("/ml/signals/{artifact_id}")
+
 async def get_ml_signals(artifact_id: str):
     """ML signals are stored per-report; this endpoint would typically look up by artifact_id.
     For now returns empty - signals are embedded in SecurityReport.ml_signals."""
