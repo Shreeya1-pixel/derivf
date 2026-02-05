@@ -1,5 +1,9 @@
-from fastapi import APIRouter, HTTPException, WebSocket, UploadFile, File
+from fastapi import APIRouter, HTTPException, WebSocket, UploadFile, File, BackgroundTasks
 from typing import List, Optional
+from slack_sdk import WebClient
+from slack_sdk.errors import SlackApiError
+from pydantic import BaseModel
+from app.core.config import settings
 from app.models.schemas import (
     AnalysisRequest, SecurityReport, AgentFinding,
     PDFBase64Request, PDFUrlRequest, GitHubArtifactRequest,
@@ -192,3 +196,41 @@ async def websocket_endpoint(websocket: WebSocket):
         print(f"WebSocket error: {e}")
     finally:
         await websocket.close()
+
+
+# --- Slack Integration ---
+
+# Initialize Slack Client lazily/conditionally
+slack_client = WebClient(token=settings.SLACK_BOT_TOKEN) if hasattr(settings, "SLACK_BOT_TOKEN") and settings.SLACK_BOT_TOKEN else None
+
+class SlackMessage(BaseModel):
+    channel: str
+    text: str
+
+def send_slack_notification_task(channel: str, text: str):
+    """
+    Background task to send slack notification
+    """
+    if not slack_client:
+        print("Slack client not initialized. Missing SLACK_BOT_TOKEN.")
+        return
+
+    try:
+        response = slack_client.chat_postMessage(
+            channel=channel,
+            text=text
+        )
+        print(f"Slack message sent: {response['ts']}")
+    except SlackApiError as e:
+        print(f"Error sending slack message: {e.response['error']}")
+
+@router.post("/send-notification")
+async def send_notification(message: SlackMessage, background_tasks: BackgroundTasks):
+    """
+    Send a notification to Slack asynchronously.
+    """
+    if not slack_client:
+        raise HTTPException(status_code=503, detail="Slack integration not configured. Setup SLACK_BOT_TOKEN.")
+    
+    background_tasks.add_task(send_slack_notification_task, message.channel, message.text)
+    return {"status": "Notification queued"}

@@ -13,6 +13,10 @@ class Settings(BaseSettings):
     
     BACKEND_CORS_ORIGINS: list[str] = ["http://localhost:8000", "https://localhost:8000", "http://localhost:5173", "https://localhost:5173"]
 
+    # Slack Configuration
+    SLACK_BOT_TOKEN: str = os.getenv("SLACK_BOT_TOKEN", "")
+    SLACK_CHANNEL_ID: str = os.getenv("SLACK_CHANNEL_ID", "general")
+
     class Config:
         env_file = ".env"
 
