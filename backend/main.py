@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.api import endpoints
+from app.api import internal
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -19,6 +20,7 @@ if settings.BACKEND_CORS_ORIGINS:
     )
 
 app.include_router(endpoints.router, prefix=settings.API_V1_STR)
+app.include_router(internal.router)
 
 @app.get("/")
 async def root():

@@ -16,6 +16,10 @@ class Settings(BaseSettings):
     # Slack Configuration
     SLACK_BOT_TOKEN: str = os.getenv("SLACK_BOT_TOKEN", "")
     SLACK_CHANNEL_ID: str = os.getenv("SLACK_CHANNEL_ID", "general")
+    
+    # Supabase (Database)
+    SUPABASE_URL: str = os.getenv("SUPABASE_URL", "")
+    SUPABASE_SERVICE_ROLE_KEY: str = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
 
     class Config:
         env_file = ".env"
